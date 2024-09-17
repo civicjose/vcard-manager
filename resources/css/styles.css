@@ -1,0 +1,145 @@
+/* General Styles */
+body {
+    background-color: #f8f9fa; /* Un color de fondo claro */
+}
+
+.navbar {
+    background-color: #343a40; /* Color oscuro para la barra de navegación */
+}
+
+.navbar a.navbar-brand {
+    color: white;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.navbar a.navbar-brand:hover {
+    color: #ffc107; /* Color de acento */
+}
+
+/* Table Styles */
+.table-hover tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.table-dark th {
+    background-color: #343a40;
+    color: #fff;
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    border: none;
+    color: #343a40;
+    transition: background-color 0.3s ease;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+    color: #fff;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* Form Styles */
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background-color: #343a40;
+    color: #fff;
+    font-size: 1.25rem;
+    text-align: center;
+}
+
+.form-label {
+    font-weight: bold;
+    color: #343a40;
+}
+
+.form-control {
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #007bff;
+}
+
+/* Alert Styles */
+.alert-success {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom Styling for File Input */
+input[type="file"] {
+    border: 2px dashed #007bff;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    text-align: center;
+}
+
+input[type="file"]:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+/* Footer Styling (Optional) */
+footer {
+    background-color: #343a40;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    margin-top: 40px;
+}
+
+footer a {
+    color: #ffc107;
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: #fff;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 576px) {
+    .navbar {
+        text-align: center;
+    }
+    .navbar .navbar-brand {
+        display: block;
+        margin: 0 auto;
+    }
+
+    .card-header, .card-body {
+        text-align: center;
+    }
+}

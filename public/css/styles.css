@@ -1,0 +1,239 @@
+@import url('https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: SUSE, sans-serif;
+    text-decoration: none;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    height: 100vh;
+    background-color: #fff;
+}
+
+.vcard-container {
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+}
+
+.header {
+    background: linear-gradient(to right, #d6007d, #7c0076);
+    padding: 40px 20px 40px 20px;
+    color: #fff;
+}
+
+.header p {
+    background-color: rgba(255, 255, 255, 0.2); /* Fondo blanco translúcido */
+    padding: 5px 10px; /* Espaciado interno para que el texto no se pegue a los bordes */
+    border-radius: 20px; /* Bordes redondeados */
+    display: inline-block; /* Asegura que el fondo se ajuste solo al tamaño del texto */
+    color: #fff; /* Mantener el texto blanco para el contraste */
+    font-weight: bold; /* Hace el cargo más destacado */
+}
+
+.content {
+    background-color: #fff;
+    color: #d6007d;
+}
+.content p {
+    color: #d6007d;
+}
+
+.profile-pic img {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+p {
+    font-size: 16px;
+}
+
+.contact-icons {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 0 20px 0;
+    border-bottom: 3px solid;
+    border-image: linear-gradient(to right, #d6007d, #7c0076) 1;
+}
+
+.contact-icons a {
+    text-decoration: none; /* Elimina el subrayado de los enlaces */
+    color: inherit; /* Hereda el color del contenedor */
+    display: flex; /* Asegura que el enlace abarque todo el div */
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    border-left: 3px solid #d6007d;
+}
+
+.contact-icons a:first-child {
+    border-left: none; /* Elimina el borde izquierdo del primer icono */
+}
+
+.icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+    flex-grow: 1;
+    border-left: 3px solid #d6007d;
+    transition: background 0.3s ease;
+}
+
+.icon-item:first-child {
+    border-left: none; /* Elimina el borde izquierdo del primer icono */
+}
+
+.icon-item:hover {
+    background: linear-gradient(to right, #d6007d, #7c0076); /* Degradado al hacer hover */
+    color: white; /* Cambia el color del texto */
+}
+
+.icon-item i {
+    font-size: 30px;
+    margin-bottom: 5px;
+    transition: color 0.3s ease; /* Transición suave para el color del icono */
+}
+
+.icon-item:hover i {
+    color: white; /* Cambia el color del icono al hacer hover */
+}
+
+.contact-info {
+    padding: 20px;
+}
+
+.contact-info p {
+    display: inline-block;
+    justify-content: center; /* Centra el contenido */
+    align-items: center;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 15px;
+    padding-left: 5px;
+    background-color: rgba(0, 0, 0, 0.05); /* Fondo blanco translúcido */
+    padding: 5px 10px; /* Espaciado interno para que el texto no se pegue a los bordes */
+    border-radius: 20px; /* Bordes redondeados */
+    width: auto; /* Ajusta el ancho del párrafo al contenido */
+    cursor: pointer; 
+}
+
+.contact-info p i {
+    font-size: 18px; /* Tamaño del icono */
+    margin-right: 10px; /* Espacio entre el icono y el texto */
+    color: #d6007d; /* Color del icono */
+}
+
+.contact-info strong {
+    color: #d6007d; /* Color destacado para el texto fuerte */
+    margin-right: 8px;
+}
+
+.contact-info a {
+    text-decoration: none;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.contact-info a:hover {
+    color: #d6007d; /* Cambia el color del enlace al pasar el cursor */
+}
+
+.social-icons {
+    display: flex;
+    justify-content: space-around;
+    padding: 40px 40px;
+}
+
+.social-icons a {
+    color: #fff; /* Color inicial de los iconos */
+    font-size: 20px; /* Tamaño del icono */
+    text-decoration: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo translúcido */
+    border-radius: 50%; /* Hace que el contenedor sea circular */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Transiciones suaves */
+}
+
+.social-icons a:hover {
+    background-color: #d6007d; /* Fondo rosa al pasar el ratón */
+    color: white; /* Cambia el color del icono a blanco */
+}
+
+.add-contact-button {
+    background-color: #d6007d; /* Color de fondo del botón */
+    color: white; /* Color del texto del botón */
+    border: none; /* Sin borde */
+    border-radius: 20px; /* Bordes redondeados */
+    padding: 10px 20px; /* Espaciado interno del botón */
+    font-size: 16px; /* Tamaño del texto del botón */
+    cursor: pointer; /* Cursor tipo mano al pasar por encima */
+    display: block; /* Hace que el botón sea un bloque */
+    margin: 0px auto; /* Espaciado alrededor del botón y centrado horizontalmente */
+    text-align: center; /* Centra el texto dentro del botón */
+    transition: background-color 0.3s ease; /* Transición suave para el color de fondo */
+}
+
+.add-contact-button:hover {
+    background-color: #7c0076; /* Color de fondo al pasar el ratón */
+}
+
+.logo-image {
+    padding: 20px 40px 20px 40px;
+}
+
+.logo-image img {
+    width: 80%; /* Ajusta el tamaño de la imagen según sea necesario */
+    height: auto; /* Mantiene la proporción de la imagen */
+    max-width: 100%; /* Se adapta a la anchura disponible */
+}
+.logo-marcas {
+    padding: 0px 40px 20px 40px;
+}
+
+.logo-marcas img {
+    width: 100%; /* Ajusta el tamaño de la imagen según sea necesario */
+    height: auto; /* Mantiene la proporción de la imagen */
+    max-width: 100%; /* Se adapta a la anchura disponible */
+}
+
+.copy-confirm {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(214, 0, 125, 0.8); /* Color de fondo con transparencia */
+    color: white;
+    padding: 15px 30px;
+    border-radius: 10px;
+    opacity: 0; /* Inicialmente invisible */
+    transition: opacity 0.3s ease;
+    font-size: 18px;
+    z-index: 1000;
+    text-align: center; /* Asegura que el texto esté centrado */
+}
+
+.copy-confirm.show {
+    opacity: 1; /* Hacer visible el mensaje */
+}
