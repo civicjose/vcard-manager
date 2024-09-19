@@ -12,7 +12,7 @@ class VCard extends Model
     // Nombre de la tabla en la base de datos
     protected $table = 'vcards';  // Especifica el nombre correcto de la tabla
 
-    protected $fillable = ['name', 'lastname', 'position', 'phone', 'email', 'company_id', 'image'];
+    protected $fillable = ['name', 'lastname', 'slug', 'qr_code', 'position', 'phone', 'email', 'company_id', 'image', 'show_brands'];
 
     // Relación con el modelo Company (una vCard pertenece a una empresa)
     public function company()

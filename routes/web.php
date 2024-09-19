@@ -17,7 +17,7 @@ Route::get('/vcards/{id}/edit', [VCardController::class, 'edit'])->name('vcards.
 Route::put('/vcards/{id}', [VCardController::class, 'update'])->name('vcards.update');
 Route::delete('/vcards/{id}', [VCardController::class, 'destroy'])->name('vcards.destroy');
 // Ruta para ver la vCard en detalle
-Route::get('/vcards/{id}', [VCardController::class, 'show'])->name('vcards.show');
+Route::get('/vcards/{slug}', [VCardController::class, 'show'])->name('vcards.show');
 
 // Rutas para Empresas
 Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');

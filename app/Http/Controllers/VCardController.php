@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\VCard;
 use App\Models\Company;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use SimpleSoftwareIO\QrCode\Facades\QrCode; // Importar la librería para generar QR
+use Illuminate\Support\Facades\Storage;
 
 class VCardController extends Controller
 {
@@ -32,40 +35,57 @@ class VCardController extends Controller
 
     public function store(Request $request)
     {
-        // Validar los datos del formulario
         $request->validate([
             'name' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'position' => 'required|string|max:255',
             'phone' => 'required|regex:/^\+34 \d{3} \d{3} \d{3}$/',
             'email' => 'required|email|max:255',
-            'company_id' => 'nullable|exists:companies,id',  // Validar que la empresa exista
-            'image' => 'nullable|image|max:1024',  // Validar que el archivo sea una imagen
+            'company_id' => 'nullable|exists:companies,id',
+            'image' => 'nullable|image|max:1024',
+            'show_brands' => 'required|in:yes,no',
         ]);
-    
+
         // Subir la imagen si existe
         $imagePath = null;
         if ($request->hasFile('image')) {
-            // Guardar la imagen en storage/app/public/profiles
             $imagePath = $request->file('image')->store('profiles', 'public');
         }
-    
-        // Crear la nueva vCard
-        VCard::create([
+
+        // Generar el slug a partir del nombre y apellidos
+        $slug = Str::slug($request->name . '-' . $request->lastname);
+
+        // Crear la nueva vCard con el slug
+        $vcard = VCard::create([
             'name' => $request->name,
             'lastname' => $request->lastname,
             'position' => $request->position,
             'phone' => $request->phone,
             'email' => $request->email,
             'company_id' => $request->company_id,
-            'image' => $imagePath,  // Guardar la ruta de la imagen en la base de datos
+            'image' => $imagePath,
+            'show_brands' => $request->show_brands,
+            'slug' => $slug,  // Asegúrate de que el slug se genere y guarde
         ]);
-    
-        // Redirigir al listado de vCards con un mensaje de éxito
+
+        if (empty($slug)) {
+            return back()->withErrors(['slug' => 'El slug no se pudo generar.']);
+        }
+
+        // Generar la URL para el QR code
+        $url = route('vcards.show', [$vcard->slug]);
+
+        // Generar la imagen QR y guardarla en el almacenamiento público
+        $qrPath = 'qrcodes/' . $slug . '.png'; // Nombre del archivo QR
+        QrCode::format('png')->size(200)->generate($url, storage_path('app/public/' . $qrPath));
+
+        // Guardar la ruta del QR en la vCard (opcional si quieres guardarlo)
+        $vcard->update(['qr_code' => $qrPath]);
+
         return redirect()->route('vcards.index')->with('success', 'vCard creada correctamente');
     }
-    
-    
+
+
 
     // Función para mostrar el formulario de edición de una vCard existente
     public function edit($id)
@@ -83,27 +103,30 @@ class VCardController extends Controller
     // Función para actualizar una vCard existente en la base de datos
     public function update(Request $request, $id)
     {
-        // Buscar la vCard por su ID
         $vcard = VCard::findOrFail($id);
 
-        // Validar los datos del formulario
+        // Validar los datos enviados desde el formulario
         $request->validate([
-            'name' => 'required',
-            'lastname' => 'required',
-            'position' => 'required',
+            'name' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'position' => 'required|string|max:255',
             'phone' => 'required|regex:/^\+34 \d{3} \d{3} \d{3}$/',
-            'email' => 'required|email',
+            'email' => 'required|email|max:255',
             'company_id' => 'nullable|exists:companies,id',
             'image' => 'nullable|image|max:1024',
+            'show_brands' => 'required|in:yes,no',
         ]);
 
-        // Subir la imagen de perfil si existe
+        // Generar el slug a partir del nombre y apellidos
+        $slug = Str::slug($request->name . '-' . $request->lastname);
+
+        // Subir la imagen si existe
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('profiles', 'public');
             $vcard->image = $imagePath;
         }
 
-        // Actualizar la vCard en la base de datos
+        // Actualizar los datos de la vCard
         $vcard->update([
             'name' => $request->name,
             'lastname' => $request->lastname,
@@ -111,9 +134,10 @@ class VCardController extends Controller
             'phone' => $request->phone,
             'email' => $request->email,
             'company_id' => $request->company_id,
+            'show_brands' => $request->show_brands,  // Actualizar la selección de marcas
+            'slug' => $slug,  // Asegúrate de que el slug se genere y guarde
         ]);
 
-        // Redirigir al listado de vCards con un mensaje de éxito
         return redirect()->route('vcards.index')->with('success', 'vCard actualizada correctamente');
     }
 
@@ -128,16 +152,9 @@ class VCardController extends Controller
         return redirect()->route('vcards.index')->with('success', 'vCard eliminada correctamente');
     }
 
-    public function show($id)
+    public function show($slug)
     {
-        // Buscar la vCard por su ID junto con la empresa relacionada
-        $vcard = VCard::with('company')->findOrFail($id);
-    
-        // Retornar la vista que mostrará los detalles de la vCard
+        $vcard = VCard::where('slug', $slug)->firstOrFail();
         return view('vcards.show', compact('vcard'));
     }
-    
 }
-
-
-

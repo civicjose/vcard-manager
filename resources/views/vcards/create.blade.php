@@ -68,6 +68,14 @@
                 <label for="image" class="form-label">Foto de perfil (opcional)</label>
                 <input type="file" name="image" id="image" class="form-control">
             </div>
+            <div class="mb-3">
+                <label for="show_brands" class="form-label">¿Mostrar marcas?</label>
+                <select name="show_brands" id="show_brands" class="form-select">
+                    <option value="no" {{ old('show_brands', $vcard->show_brands ?? 'no') == 'no' ? 'selected' : '' }}>No</option>
+                    <option value="yes" {{ old('show_brands', $vcard->show_brands ?? 'no') == 'yes' ? 'selected' : '' }}>Sí</option>
+                </select>
+            </div>
+
 
             <!-- Botón para enviar -->
             <button type="submit" class="btn btn-success">Crear vCard</button>
