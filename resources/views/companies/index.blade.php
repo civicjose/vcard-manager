@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Listado de Empresas</h1>
+    <h1 class="h2">Listado de Empresas</h1>
     <a href="{{ route('companies.create') }}" class="btn btn-primary">Añadir nueva Empresa</a>
 </div>
 
@@ -27,15 +27,15 @@
             <tr>
                 <td>{{ $company->name }}</td>
                 <td>
-                    @if ($company->logo)
-                        <img src="{{ asset('storage/' . $company->logo) }}" alt="Logo Empresa" width="200">
+                    @if($company->logo)
+                        <img src="{{ asset('storage/' . $company->logo) }}" alt="Logo de {{ $company->name }}" class="img-fluid" width="100">
                     @else
                         Sin logo
                     @endif
                 </td>
                 <td>
                     <a href="{{ route('companies.edit', $company->id) }}" class="btn btn-warning btn-sm">Editar</a>
-                    <form action="{{ route('companies.destroy', $company->id) }}" method="POST" class="d-inline-block">
+                    <form action="{{ route('companies.destroy', $company->id) }}" method="POST" style="display:inline-block;">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>

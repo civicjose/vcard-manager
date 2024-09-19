@@ -6,7 +6,8 @@ use App\Models\VCard;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use SimpleSoftwareIO\QrCode\Facades\QrCode; // Importar la librería para generar QR
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Storage;
 
 class VCardController extends Controller
@@ -52,8 +53,10 @@ class VCardController extends Controller
             $imagePath = $request->file('image')->store('profiles', 'public');
         }
 
-        // Generar el slug a partir del nombre y apellidos
-        $slug = Str::slug($request->name . '-' . $request->lastname);
+    // Generar un slug único
+    $slug = $this->generateUniqueSlug($request->name, $request->lastname);
+
+
 
         // Crear la nueva vCard con el slug
         $vcard = VCard::create([
@@ -75,11 +78,19 @@ class VCardController extends Controller
         // Generar la URL para el QR code
         $url = route('vcards.show', [$vcard->slug]);
 
-        // Generar la imagen QR y guardarla en el almacenamiento público
-        $qrPath = 'qrcodes/' . $slug . '.png'; // Nombre del archivo QR
-        QrCode::format('png')->size(200)->generate($url, storage_path('app/public/' . $qrPath));
+        // Usar Endroid QRCode para generar el QR
+        $qrCode = new QrCode($url);
+        $qrCode->setSize(200); // Tamaño del QR
 
-        // Guardar la ruta del QR en la vCard (opcional si quieres guardarlo)
+        // Generar el archivo PNG
+        $writer = new PngWriter();
+        $qrPath = 'qrcodes/' . $slug . '.png';
+        $result = $writer->write($qrCode);
+
+        // Guardar el archivo PNG en el almacenamiento público
+        Storage::disk('public')->put($qrPath, $result->getString());
+
+        // Actualizar la vCard para guardar la ruta del código QR
         $vcard->update(['qr_code' => $qrPath]);
 
         return redirect()->route('vcards.index')->with('success', 'vCard creada correctamente');
@@ -101,11 +112,11 @@ class VCardController extends Controller
     }
 
     // Función para actualizar una vCard existente en la base de datos
+
     public function update(Request $request, $id)
     {
         $vcard = VCard::findOrFail($id);
 
-        // Validar los datos enviados desde el formulario
         $request->validate([
             'name' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
@@ -117,16 +128,25 @@ class VCardController extends Controller
             'show_brands' => 'required|in:yes,no',
         ]);
 
-        // Generar el slug a partir del nombre y apellidos
-        $slug = Str::slug($request->name . '-' . $request->lastname);
+        // Guardar el slug y la imagen anteriores para comparar
+        $oldSlug = $vcard->slug;
+        $oldImage = $vcard->image;
 
-        // Subir la imagen si existe
+    // Generar un slug único si cambian el nombre o apellidos
+    $newSlug = $this->generateUniqueSlug($request->name, $request->lastname);
+
+        // Subir la nueva imagen de perfil si existe y eliminar la anterior
         if ($request->hasFile('image')) {
+            // Eliminar la imagen anterior si existe
+            if ($oldImage && Storage::disk('public')->exists($oldImage)) {
+                Storage::disk('public')->delete($oldImage);
+            }
+            // Subir la nueva imagen
             $imagePath = $request->file('image')->store('profiles', 'public');
             $vcard->image = $imagePath;
         }
 
-        // Actualizar los datos de la vCard
+        // Actualizar la vCard con los nuevos datos (incluido el nuevo slug)
         $vcard->update([
             'name' => $request->name,
             'lastname' => $request->lastname,
@@ -134,27 +154,82 @@ class VCardController extends Controller
             'phone' => $request->phone,
             'email' => $request->email,
             'company_id' => $request->company_id,
-            'show_brands' => $request->show_brands,  // Actualizar la selección de marcas
-            'slug' => $slug,  // Asegúrate de que el slug se genere y guarde
+            'show_brands' => $request->show_brands,
+            'slug' => $newSlug,
         ]);
+
+        // Si el slug ha cambiado, eliminar el QR anterior y generar uno nuevo
+        if ($oldSlug !== $newSlug) {
+            // Eliminar el QR anterior
+            if ($vcard->qr_code && Storage::disk('public')->exists($vcard->qr_code)) {
+                Storage::disk('public')->delete($vcard->qr_code);
+            }
+
+            // Generar la nueva URL para el QR code
+            $url = route('vcards.show', [$newSlug]);
+
+            // Usar Endroid QRCode para generar el nuevo QR
+            $qrCode = new QrCode($url);
+            $qrCode->setSize(200);
+
+            // Generar el nuevo archivo PNG
+            $writer = new PngWriter();
+            $qrPath = 'qrcodes/' . $newSlug . '.png';
+            $result = $writer->write($qrCode);
+
+            // Guardar el nuevo archivo PNG en el almacenamiento público
+            Storage::disk('public')->put($qrPath, $result->getString());
+
+            // Actualizar la vCard con la nueva ruta del QR
+            $vcard->update(['qr_code' => $qrPath]);
+        }
 
         return redirect()->route('vcards.index')->with('success', 'vCard actualizada correctamente');
     }
 
+
     // Función para eliminar una vCard existente
     public function destroy($id)
     {
-        // Buscar la vCard por su ID y eliminarla
         $vcard = VCard::findOrFail($id);
+
+        // Eliminar la imagen de perfil si existe
+        if ($vcard->image && Storage::disk('public')->exists($vcard->image)) {
+            Storage::disk('public')->delete($vcard->image);
+        }
+
+        // Eliminar el código QR si existe
+        if ($vcard->qr_code && Storage::disk('public')->exists($vcard->qr_code)) {
+            Storage::disk('public')->delete($vcard->qr_code);
+        }
+
+        // Eliminar la vCard de la base de datos
         $vcard->delete();
 
-        // Redirigir al listado de vCards con un mensaje de éxito
-        return redirect()->route('vcards.index')->with('success', 'vCard eliminada correctamente');
+        return redirect()->route('vcards.index')->with('success', 'vCard eliminada correctamente, incluyendo todos sus recursos.');
     }
 
     public function show($slug)
     {
         $vcard = VCard::where('slug', $slug)->firstOrFail();
         return view('vcards.show', compact('vcard'));
+    }
+
+    public function generateUniqueSlug($name, $lastname)
+    {
+        // Generar el slug base a partir del nombre y apellidos
+        $slug = Str::slug($name . '-' . $lastname);
+
+        // Comprobar si ya existe el slug en la base de datos
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (VCard::where('slug', $slug)->exists()) {
+            // Si el slug ya existe, añadir un número secuencial al final
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+
+        return $slug;
     }
 }

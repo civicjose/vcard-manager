@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Listado de vCards</h1>
+    <h1 class="h2">Listado de vCards</h1>
     <a href="{{ route('vcards.create') }}" class="btn btn-primary">Añadir nueva vCard</a>
 </div>
 
@@ -26,7 +26,6 @@
             <th>Apellidos</th>
             <th>Puesto</th>
             <th>Teléfono</th>
-            <th>Email</th>
             <th>Empresa</th>
             <th>Acciones</th>
         </tr>
@@ -38,18 +37,15 @@
             <td>{{ $vcard->lastname }}</td>
             <td>{{ $vcard->position }}</td>
             <td>{{ $vcard->phone }}</td>
-            <td>{{ $vcard->email }}</td>
             <td>
-                @if ($vcard->company)
+                @if($vcard->company)
                 {{ $vcard->company->name }}
                 @else
                 Sin empresa
                 @endif
             </td>
             <td>
-                <!-- Botón de Ver -->
                 <a href="{{ route('vcards.show', [$vcard->slug]) }}" class="btn btn-info btn-sm">Ver</a>
-                <!-- Otras acciones como Editar y Eliminar -->
                 <a href="{{ route('vcards.edit', $vcard->id) }}" class="btn btn-warning btn-sm">Editar</a>
                 <form action="{{ route('vcards.destroy', $vcard->id) }}" method="POST" style="display:inline-block;">
                     @csrf
@@ -57,8 +53,12 @@
                     <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
                 </form>
                 <!-- Botón para ver el QR -->
+                @php
+                $qrUrl = asset('storage/' . $vcard->qr_code);
+                @endphp
+
                 @if($vcard->qr_code)
-                <button type="button" class="btn btn-secondary btn-sm" onclick="showQrCode(`{{ asset('storage' . $vcard->qr_code) }}`)">Ver QR</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="showQrCode('{{ $qrUrl }}')">Ver QR</button>
                 @endif
             </td>
         </tr>
@@ -85,57 +85,20 @@
 </div>
 
 <script>
+    function searchTable() {
+        let input = document.getElementById('search').value.toLowerCase();
+        let rows = document.querySelectorAll('#vcardTable tbody tr');
+
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(input) ? '' : 'none';
+        });
+    }
+
     function showQrCode(imageUrl) {
         var qrModal = new bootstrap.Modal(document.getElementById('qrModal'));
         document.getElementById('qrImage').src = imageUrl;
         qrModal.show();
-    }
-</script>
-
-<script>
-    function searchTable() {
-        // Obtener el valor del campo de búsqueda
-        let input = document.getElementById('search');
-        let filter = input.value.toLowerCase();
-
-        // Obtener la tabla y todas las filas
-        let table = document.getElementById('vcardTable');
-        let rows = table.getElementsByTagName('tr');
-
-        // Iterar sobre todas las filas, comenzando desde la segunda fila (para ignorar el encabezado)
-        for (let i = 1; i < rows.length; i++) {
-            let row = rows[i];
-
-            // Obtener todas las celdas en la fila
-            let nameCell = row.getElementsByTagName('td')[0];
-            let lastnameCell = row.getElementsByTagName('td')[1];
-            let positionCell = row.getElementsByTagName('td')[2];
-            let phoneCell = row.getElementsByTagName('td')[3];
-            let mailCell = row.getElementsByTagName('td')[4];
-            let companyCell = row.getElementsByTagName('td')[5];
-
-            // Comprobar si las celdas contienen el valor buscado
-            if (nameCell || lastnameCell || phoneCell || mailCell || companyCell) {
-                let nameText = nameCell.textContent.toLowerCase();
-                let lastnameText = lastnameCell.textContent.toLowerCase();
-                let positionText = positionCell.textContent.toLowerCase();
-                let phoneText = phoneCell.textContent.toLowerCase();
-                let mailText = mailCell.textContent.toLowerCase();
-                let companyText = companyCell.textContent.toLowerCase();
-
-                // Si cualquier celda coincide, mostramos la fila, de lo contrario la ocultamos
-                if (nameText.indexOf(filter) > -1 ||
-                    lastnameText.indexOf(filter) > -1 ||
-                    positionText.indexOf(filter) > -1 ||
-                    phoneText.indexOf(filter) > -1 ||
-                    mailText.indexOf(filter) > -1 ||
-                    companyText.indexOf(filter) > -1) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            }
-        }
     }
 </script>
 @endsection
