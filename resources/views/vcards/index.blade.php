@@ -45,12 +45,12 @@
                 @endif
             </td>
             <td>
-                <a href="{{ route('vcards.show', [$vcard->slug]) }}" class="btn btn-info btn-sm">Ver</a>
+                <a href="{{ route('vcards.show', [$vcard->slug]) }}" class="btn btn-info btn-sm" target="_blank">Ver</a>
                 <a href="{{ route('vcards.edit', $vcard->id) }}" class="btn btn-warning btn-sm">Editar</a>
                 <form action="{{ route('vcards.destroy', $vcard->id) }}" method="POST" style="display:inline-block;">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                    <button type="button" class="btn btn-danger btn-sm btn-delete">Eliminar</button>
                 </form>
                 <!-- Botón para ver el QR -->
                 @php
