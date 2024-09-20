@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VCardController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +18,7 @@ use App\Http\Controllers\CompanyController;
 
 // Página de bienvenida (pública)
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 // Grupo de rutas protegidas por el middleware 'auth'
@@ -41,11 +42,28 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/companies/{id}', [CompanyController::class, 'update'])->name('companies.update');
     Route::delete('/companies/{id}', [CompanyController::class, 'destroy'])->name('companies.destroy');
 
+    // Ruta para mostrar el formulario de crear usuario
+    Route::get('admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
+    
+    // Ruta para procesar el formulario y guardar el nuevo usuario
+    Route::post('admin/users', [UserController::class, 'store'])->name('admin.users.store');
+
     Route::get('/profile/edit', function () {
         // Aquí puedes redirigir al dashboard o a otra vista, si no necesitas la edición de perfil
         return redirect()->route('vcards.index');
     })->name('profile.edit');
+
+    
 });
+
+
+
+// Rutas protegidas solo para el administrador
+Route::middleware(['auth'])->group(function () {
+    Route::get('admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
+    Route::post('admin/users', [UserController::class, 'store'])->name('admin.users.store');
+});
+
 
 // Ruta del dashboard para usuarios autenticados
 Route::get('/dashboard', function () {
@@ -54,3 +72,7 @@ Route::get('/dashboard', function () {
 
 // Incluir las rutas de autenticación de Laravel Breeze
 require __DIR__.'/auth.php';
+
+Route::get('register', function () {
+    abort(403, 'Acceso denegado.');
+})->name('register');
