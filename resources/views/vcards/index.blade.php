@@ -43,6 +43,7 @@
                 Sin empresa
                 @endif
             </td>
+<<<<<<< HEAD
             <td class="px-6 py-4 flex space-x-2">
                 <a href="{{ route('vcards.show', [$vcard->slug]) }}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm">Ver</a>
                 <a href="{{ route('vcards.edit', $vcard->id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 text-sm">Editar</a>
@@ -50,6 +51,15 @@
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">Eliminar</button>
+=======
+            <td>
+                <a href="{{ route('vcards.show', [$vcard->slug]) }}" class="btn btn-info btn-sm" target="_blank">Ver</a>
+                <a href="{{ route('vcards.edit', $vcard->id) }}" class="btn btn-warning btn-sm">Editar</a>
+                <form action="{{ route('vcards.destroy', $vcard->id) }}" method="POST" style="display:inline-block;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="button" class="btn btn-danger btn-sm btn-delete">Eliminar</button>
+>>>>>>> 2736f2f813a1498ed8ccc38039a773e44d63b147
                 </form>
 
                 <!-- Botón para ver el QR -->

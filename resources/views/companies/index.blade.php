@@ -37,7 +37,11 @@
                     <form action="{{ route('companies.destroy', $company->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta empresa?')">
                         @csrf
                         @method('DELETE')
+<<<<<<< HEAD
                         <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Eliminar</button>
+=======
+                        <button type="button" class="btn btn-danger btn-sm btn-delete">Eliminar</button>
+>>>>>>> 2736f2f813a1498ed8ccc38039a773e44d63b147
                     </form>
                 </td>
             </tr>
