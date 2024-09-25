@@ -25,10 +25,8 @@ class VCardController extends Controller
     // Función para mostrar el formulario de creación de vCard
     public function create()
     {
-        // Obtener todas las empresas para mostrar en el formulario
+        // Suponiendo que quieres mostrar las empresas disponibles
         $companies = Company::all();
-
-        // Retornar la vista de creación de vCard con las empresas disponibles
         return view('vcards.create', compact('companies'));
     }
 
@@ -116,7 +114,7 @@ class VCardController extends Controller
     public function update(Request $request, $id)
     {
         $vcard = VCard::findOrFail($id);
-
+    
         $request->validate([
             'name' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
@@ -127,14 +125,14 @@ class VCardController extends Controller
             'image' => 'nullable|image|max:1024',
             'show_brands' => 'required|in:yes,no',
         ]);
-
+    
         // Guardar el slug y la imagen anteriores para comparar
         $oldSlug = $vcard->slug;
         $oldImage = $vcard->image;
-
-    // Generar un slug único si cambian el nombre o apellidos
-    $newSlug = $this->generateUniqueSlug($request->name, $request->lastname);
-
+    
+        // Generar el nuevo slug si cambian el nombre o los apellidos
+        $newSlug = Str::slug($request->name . '-' . $request->lastname);
+    
         // Subir la nueva imagen de perfil si existe y eliminar la anterior
         if ($request->hasFile('image')) {
             // Eliminar la imagen anterior si existe
@@ -145,7 +143,7 @@ class VCardController extends Controller
             $imagePath = $request->file('image')->store('profiles', 'public');
             $vcard->image = $imagePath;
         }
-
+    
         // Actualizar la vCard con los nuevos datos (incluido el nuevo slug)
         $vcard->update([
             'name' => $request->name,
@@ -157,33 +155,33 @@ class VCardController extends Controller
             'show_brands' => $request->show_brands,
             'slug' => $newSlug,
         ]);
-
+    
         // Si el slug ha cambiado, eliminar el QR anterior y generar uno nuevo
         if ($oldSlug !== $newSlug) {
             // Eliminar el QR anterior
             if ($vcard->qr_code && Storage::disk('public')->exists($vcard->qr_code)) {
                 Storage::disk('public')->delete($vcard->qr_code);
             }
-
+    
             // Generar la nueva URL para el QR code
             $url = route('vcards.show', [$newSlug]);
-
+    
             // Usar Endroid QRCode para generar el nuevo QR
             $qrCode = new QrCode($url);
             $qrCode->setSize(200);
-
+    
             // Generar el nuevo archivo PNG
             $writer = new PngWriter();
             $qrPath = 'qrcodes/' . $newSlug . '.png';
             $result = $writer->write($qrCode);
-
+    
             // Guardar el nuevo archivo PNG en el almacenamiento público
             Storage::disk('public')->put($qrPath, $result->getString());
-
+    
             // Actualizar la vCard con la nueva ruta del QR
             $vcard->update(['qr_code' => $qrPath]);
         }
-
+    
         return redirect()->route('vcards.index')->with('success', 'vCard actualizada correctamente');
     }
 
@@ -192,20 +190,20 @@ class VCardController extends Controller
     public function destroy($id)
     {
         $vcard = VCard::findOrFail($id);
-
+    
         // Eliminar la imagen de perfil si existe
         if ($vcard->image && Storage::disk('public')->exists($vcard->image)) {
             Storage::disk('public')->delete($vcard->image);
         }
-
+    
         // Eliminar el código QR si existe
         if ($vcard->qr_code && Storage::disk('public')->exists($vcard->qr_code)) {
             Storage::disk('public')->delete($vcard->qr_code);
         }
-
+    
         // Eliminar la vCard de la base de datos
         $vcard->delete();
-
+    
         return redirect()->route('vcards.index')->with('success', 'vCard eliminada correctamente, incluyendo todos sus recursos.');
     }
 

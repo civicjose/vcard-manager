@@ -3,42 +3,41 @@
 @section('title', 'Listado de Empresas')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h2">Listado de Empresas</h1>
-    <a href="{{ route('companies.create') }}" class="btn btn-primary">Añadir nueva Empresa</a>
+<div class="flex justify-between items-center mb-6">
+    <a href="{{ route('companies.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Añadir nueva Empresa</a>
 </div>
 
 @if(session('success'))
-    <div class="alert alert-success">
+    <div class="bg-green-100 text-green-700 p-4 rounded mb-4">
         {{ session('success') }}
     </div>
 @endif
 
-<table class="table table-hover table-bordered">
-    <thead class="table-dark">
-        <tr>
-            <th>Nombre</th>
-            <th>Logo</th>
-            <th>Acciones</th>
+<table class="min-w-full bg-white border border-gray-200 shadow-sm">
+    <thead>
+        <tr class="bg-gray-800 text-white">
+            <th class="text-left px-4 py-2">Nombre</th>
+            <th class="text-left px-4 py-2">Logo</th>
+            <th class="text-left px-4 py-2">Acciones</th>
         </tr>
     </thead>
     <tbody>
         @foreach ($companies as $company)
-            <tr>
-                <td>{{ $company->name }}</td>
-                <td>
+            <tr class="border-t border-gray-200">
+                <td class="px-4 py-2">{{ $company->name }}</td>
+                <td class="px-4 py-2">
                     @if($company->logo)
-                        <img src="{{ asset('storage/' . $company->logo) }}" alt="Logo de {{ $company->name }}" class="img-fluid" width="100">
+                        <img src="{{ asset('storage/' . $company->logo) }}" alt="Logo de {{ $company->name }}" class="w-24 h-auto">
                     @else
-                        Sin logo
+                        <span class="text-gray-500">Sin logo</span>
                     @endif
                 </td>
-                <td>
-                    <a href="{{ route('companies.edit', $company->id) }}" class="btn btn-warning btn-sm">Editar</a>
-                    <form action="{{ route('companies.destroy', $company->id) }}" method="POST" style="display:inline-block;">
+                <td class="px-4 py-2 flex space-x-2">
+                    <a href="{{ route('companies.edit', $company->id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">Editar</a>
+                    <form action="{{ route('companies.destroy', $company->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar esta empresa?')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Eliminar</button>
                     </form>
                 </td>
             </tr>

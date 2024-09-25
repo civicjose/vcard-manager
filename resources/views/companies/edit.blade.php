@@ -3,31 +3,32 @@
 @section('title', 'Editar Empresa')
 
 @section('content')
-<div class="card">
-    <div class="card-header">
-        <h2>Editar Empresa</h2>
-    </div>
-    <div class="card-body">
-        <form action="{{ route('companies.update', $company->id) }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
+<div class="bg-white shadow-md rounded-lg p-6">
 
-            <div class="mb-3">
-                <label for="name" class="form-label">Nombre de la Empresa</label>
-                <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $company->name) }}" required>
-            </div>
+    <form action="{{ route('companies.update', $company->id) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
 
-            <div class="mb-3">
-                <label for="logo" class="form-label">Logo (SVG)</label>
-                <input type="file" name="logo" id="logo" class="form-control" accept=".svg">
-                @if ($company->logo)
-                    <p>Logo actual:</p>
-                    <img src="{{ asset('storage/' . $company->logo) }}" alt="Logo Empresa" width="50">
-                @endif
-            </div>
+        <!-- Nombre de la Empresa -->
+        <div class="mb-4">
+            <label for="name" class="block text-gray-700 font-medium">Nombre de la Empresa</label>
+            <input type="text" name="name" id="name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" value="{{ old('name', $company->name) }}" required>
+        </div>
 
-            <button type="submit" class="btn btn-warning">Actualizar Empresa</button>
-        </form>
-    </div>
+        <!-- Logo de la Empresa -->
+        <div class="mb-4">
+            <label for="logo" class="block text-gray-700 font-medium">Logo (SVG)</label>
+            <input type="file" name="logo" id="logo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" accept=".svg">
+            @if ($company->logo)
+                <p class="mt-2 text-gray-600">Logo actual:</p>
+                <img src="{{ asset('storage/' . $company->logo) }}" alt="Logo Empresa" class="w-12 h-auto">
+            @endif
+        </div>
+
+        <!-- Botón para actualizar -->
+        <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+            Actualizar Empresa
+        </button>
+    </form>
 </div>
 @endsection
